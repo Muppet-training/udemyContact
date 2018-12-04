@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Consumer } from '../../context';
 import axios from 'axios';
@@ -8,14 +9,16 @@ class Contact extends Component {
 		showContactInfo: false
 	};
 
-	onDeleteClick = (id, dispatch) => {
-		axios
-			.delete(
+	onDeleteClick = async (id, dispatch) => {
+		try {
+			await axios.delete(
 				`https://jsonplaceholder.typicode.com/users/${id}`
-			)
-			.then((res) =>
-				dispatch({ type: 'DELETE_CONTACT', payload: id })
 			);
+			dispatch({ type: 'DELETE_CONTACT', payload: id });
+		} catch (e) {
+			// Running this even if no id is found because the data hasn't been save to the database
+			dispatch({ type: 'DELETE_CONTACT', payload: id });
+		}
 	};
 
 	render() {
@@ -53,6 +56,17 @@ class Contact extends Component {
 										dispatch
 									)}
 								/>
+								<Link to={`contact/edit/${id}`}>
+									<i
+										className="fas fa-pencil-alt"
+										style={{
+											cursor: 'pointer',
+											float: 'right',
+											color: 'black',
+											marginRight: '1rem'
+										}}
+									/>
+								</Link>
 							</h4>
 							{showContactInfo ? (
 								<ul className="list-group">
